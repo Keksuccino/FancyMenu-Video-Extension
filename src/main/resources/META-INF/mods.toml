@@ -1,0 +1,45 @@
+modLoader="javafml"
+loaderVersion="[33,37)"
+license="GPLv3"
+[[mods]]
+modId="fmextension_video"
+version="1.0.0"
+displayName="FancyMenu Video Extension"
+authors="Keksuccino"
+description='''
+It's a moving picture! Witch craft!
+
+COPYRIGHT:
+
+> FancyMenu Video Extension © Copyright 2022 Keksuccino.
+  FancyMenu Video Extension is licensed under GPLv3.
+
+> FancyVideo © Copyright Nick1st.
+  FancyVideo is licensed under GPLv3.
+
+----------
+
+Big Thanks to Nick1st for his INCREDIBLE video API for Minecraft!
+This extension wouldn't be possible without his hard work!
+'''
+
+[[dependencies.fmextension_video]]
+modId="fancymenu"
+mandatory=true
+ordering="AFTER"
+versionRange="[2.6.4,)"
+side="BOTH"
+
+[[dependencies.fmextension_video]]
+modId="forge"
+mandatory=true
+versionRange="[33,)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.fmextension_video]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.16,)"
+ordering="NONE"
+side="CLIENT"
