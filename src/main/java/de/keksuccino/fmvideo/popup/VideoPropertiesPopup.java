@@ -1,4 +1,4 @@
-package de.keksuccino.fmvideo.customization;
+package de.keksuccino.fmvideo.popup;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.content.BackgroundOptionsPopup;

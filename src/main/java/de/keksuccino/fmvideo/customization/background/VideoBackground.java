@@ -3,10 +3,11 @@ package de.keksuccino.fmvideo.customization.background;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import de.keksuccino.fancymenu.api.background.MenuBackground;
 import de.keksuccino.fancymenu.api.background.MenuBackgroundType;
-import de.keksuccino.fancymenu.menu.button.ButtonCache;
+import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
 import de.keksuccino.fmvideo.FmVideo;
 import de.keksuccino.fmvideo.video.VideoHandler;
 import de.keksuccino.fmvideo.video.VideoRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -14,12 +15,13 @@ import java.awt.*;
 
 public class VideoBackground extends MenuBackground {
 
+    public static VideoRenderer lastRenderer = null;
+
     protected VideoRenderer renderer;
 
     protected boolean isLocal;
     protected boolean cachedLooping = false;
     public Color backgroundColor;
-    public boolean bypassOnOpenMenu = false;
 
     public VideoBackground(MenuBackgroundType type, String videoPath, boolean isLocal) {
         super("", type);
@@ -29,17 +31,19 @@ public class VideoBackground extends MenuBackground {
 
     @Override
     public void onOpenMenu() {
-        if (!this.bypassOnOpenMenu) {
+        if (lastRenderer != this.renderer) {
             this.renderer.setTime(0L);
-            if (this.renderer.isLooping() != this.cachedLooping) {
-                this.renderer.setLooping(this.cachedLooping);
-            }
-            if (!renderer.isPlaying()) {
-                this.renderer.play();
-            }
-            //TODO remove debug
-            FmVideo.LOGGER.info("################################ ON OPEN MENU: " + this.getVideoPathOrLink());
         }
+        lastRenderer = this.renderer;
+
+        if (this.renderer.isLooping() != this.cachedLooping) {
+            this.renderer.setLooping(this.cachedLooping);
+        }
+        if (!renderer.isPlaying()) {
+            this.renderer.play();
+        }
+        //TODO remove debug
+        FmVideo.LOGGER.info("################################ ON OPEN MENU: " + this.getVideoPathOrLink());
     }
 
     @Override
@@ -131,6 +135,13 @@ public class VideoBackground extends MenuBackground {
 
     public VideoRenderer getRenderer() {
         return this.renderer;
+    }
+
+    protected static LayoutEditorScreen getEditorInstance() {
+        if (Minecraft.getInstance().currentScreen instanceof LayoutEditorScreen) {
+            return (LayoutEditorScreen) Minecraft.getInstance().currentScreen;
+        }
+        return null;
     }
 
 }

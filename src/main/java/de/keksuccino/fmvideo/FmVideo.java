@@ -3,8 +3,10 @@ package de.keksuccino.fmvideo;
 import java.io.File;
 
 import de.keksuccino.fancymenu.api.background.MenuBackgroundTypeRegistry;
+import de.keksuccino.fancymenu.api.item.CustomizationItemRegistry;
 import de.keksuccino.fmvideo.customization.EventHandler;
 import de.keksuccino.fmvideo.customization.background.VideoBackgroundType;
+import de.keksuccino.fmvideo.customization.item.VideoCustomizationItemContainer;
 import de.keksuccino.konkrete.localization.Locals;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,6 +50,9 @@ public class FmVideo {
 
                 //Registering video background type
                 MenuBackgroundTypeRegistry.registerBackgroundType(new VideoBackgroundType());
+
+                //Registering video item container
+                CustomizationItemRegistry.registerItem(new VideoCustomizationItemContainer());
 
                 Konkrete.addPostLoadingEvent("fmvideo", this::onClientSetup);
 

@@ -1,4 +1,4 @@
-package de.keksuccino.fmvideo.customization.background;
+package de.keksuccino.fmvideo.popup;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
@@ -7,9 +7,11 @@ import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.content.ChooseFil
 import de.keksuccino.fancymenu.menu.fancy.helper.ui.UIBase;
 import de.keksuccino.fancymenu.menu.fancy.helper.ui.popup.FMNotificationPopup;
 import de.keksuccino.fancymenu.menu.fancy.helper.ui.popup.FMPopup;
-import de.keksuccino.fmvideo.customization.VideoPropertiesPopup;
+import de.keksuccino.fmvideo.util.UrlUtils;
+import de.keksuccino.fmvideo.util.VideoUtils;
 import de.keksuccino.konkrete.gui.content.AdvancedButton;
 import de.keksuccino.konkrete.gui.content.AdvancedTextField;
+import de.keksuccino.konkrete.gui.screens.popup.Popup;
 import de.keksuccino.konkrete.gui.screens.popup.PopupHandler;
 import de.keksuccino.konkrete.input.KeyboardData;
 import de.keksuccino.konkrete.input.KeyboardHandler;
@@ -22,14 +24,12 @@ import net.minecraft.client.gui.screen.Screen;
 
 import java.awt.*;
 import java.io.File;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.function.Consumer;
 
-public class VideoBackgroundOptionsPopup extends FMPopup {
+public class SetVideoPopup extends FMPopup {
 
     protected LayoutEditorScreen handler;
-    protected BackgroundOptionsPopup parent;
+    protected Popup parent;
 
     protected BackgroundOptionsPopup.BackgroundOptionsSwitcher typeSwitcher;
 
@@ -44,13 +44,20 @@ public class VideoBackgroundOptionsPopup extends FMPopup {
     protected VideoPropertiesPopup.VideoProperties props;
     protected Consumer<String> callback;
 
-    public VideoBackgroundOptionsPopup(LayoutEditorScreen handler, BackgroundOptionsPopup parent, String value, Consumer<String> callback) {
+    public boolean enableProperties;
+
+    public SetVideoPopup(LayoutEditorScreen handler, Popup parent, String value, Consumer<String> callback) {
+        this(handler, parent, value, true, callback);
+    }
+
+    public SetVideoPopup(LayoutEditorScreen handler, Popup parent, String value, boolean enableProperties, Consumer<String> callback) {
 
         super(240);
         this.handler = handler;
         this.parent = parent;
         this.props = new VideoPropertiesPopup.VideoProperties();
         this.callback = callback;
+        this.enableProperties = enableProperties;
 
         KeyboardHandler.addKeyPressedListener(this::onEnterPressed);
         KeyboardHandler.addKeyPressedListener(this::onEscapePressed);
@@ -76,15 +83,17 @@ public class VideoBackgroundOptionsPopup extends FMPopup {
         });
         this.addButton(this.chooseVideoButton);
 
-        this.videoPropertiesButton = new AdvancedButton(0, 0, 100, 20, Locals.localize("fancymenu.fmvideo.videoproperties"), true, (press) -> {
-            VideoPropertiesPopup p = new VideoPropertiesPopup(this, props, (call) -> {
-                if (call != null) {
-                    this.props = call;
-                }
+        if (this.enableProperties) {
+            this.videoPropertiesButton = new AdvancedButton(0, 0, 100, 20, Locals.localize("fancymenu.fmvideo.videoproperties"), true, (press) -> {
+                VideoPropertiesPopup p = new VideoPropertiesPopup(this, props, (call) -> {
+                    if (call != null) {
+                        this.props = call;
+                    }
+                });
+                PopupHandler.displayPopup(p);
             });
-            PopupHandler.displayPopup(p);
-        });
-        this.addButton(this.videoPropertiesButton);
+            this.addButton(this.videoPropertiesButton);
+        }
 
         this.doneButton = new AdvancedButton(0, 0, 100, 20, Locals.localize("popup.done"), true, (press) -> {
             this.onClose();
@@ -92,7 +101,11 @@ public class VideoBackgroundOptionsPopup extends FMPopup {
         this.addButton(this.doneButton);
 
         this.cancelButton = new AdvancedButton(0, 0, 100, 20, Locals.localize("fancymenu.fmvideo.backgroundoptions.cancel"), true, (press) -> {
-            PopupHandler.displayPopup(this.parent);
+            if (this.parent != null) {
+                PopupHandler.displayPopup(this.parent);
+            } else {
+                this.setDisplayed(false);
+            }
         });
         this.addButton(this.cancelButton);
 
@@ -101,7 +114,7 @@ public class VideoBackgroundOptionsPopup extends FMPopup {
 
         try {
             if (value != null) {
-                PropertiesSection videoMeta = readValueString(value);
+                PropertiesSection videoMeta = VideoUtils.readValueString(value);
                 if (videoMeta.hasEntry("video") && videoMeta.hasEntry("islocal")) {
                     if (videoMeta.getEntryValue("islocal").equals("true")) {
                         this.selectedVideoPath = videoMeta.getEntryValue("video");
@@ -168,8 +181,10 @@ public class VideoBackgroundOptionsPopup extends FMPopup {
 
         }
 
-        this.videoPropertiesButton.setX(xCenter - (this.videoPropertiesButton.getWidth() / 2));
-        this.videoPropertiesButton.setY(yCenter + 20);
+        if (this.videoPropertiesButton != null) {
+            this.videoPropertiesButton.setX(xCenter - (this.videoPropertiesButton.getWidth() / 2));
+            this.videoPropertiesButton.setY(yCenter + 20);
+        }
 
         this.cancelButton.setX(xCenter - (this.cancelButton.getWidth()) - 5);
         this.cancelButton.setY(yCenter + 80);
@@ -189,39 +204,20 @@ public class VideoBackgroundOptionsPopup extends FMPopup {
         } else {
             video = this.linkInputField.getText();
         }
-        return buildValueString(video, isLocal, this.props);
-    }
-
-    public static String buildValueString(String video, boolean isLocal, VideoPropertiesPopup.VideoProperties props) {
-        String value = "";
-        value += "video:" + video + ";";
-        value += "islocal:" + isLocal + ";";
-        value += "loop:" + props.looping + ";";
-        value += "volume:" + props.volume + ";";
-        return value;
-    }
-
-    public static PropertiesSection readValueString(String value) {
-        PropertiesSection s = new PropertiesSection("video_properties");
-        if ((value != null) && value.contains(";")) {
-            for (String v : value.split("[;]")) {
-                if (v.contains(":")) {
-                    String name = v.split("[:]", 2)[0];
-                    String content = v.split("[:]", 2)[1];
-                    s.addEntry(name, content);
-                }
-            }
-        }
-        return s;
+        return VideoUtils.buildValueString(video, isLocal, this.props);
     }
 
     protected void onClose() {
         String selected = this.typeSwitcher.getSelectedValue();
         boolean isLocal = selected.equals(Locals.localize("fancymenu.fmvideo.backgroundoptions.videotype.local"));
         if (!isLocal) {
-            if (isValidUrl(this.linkInputField.getText())) {
+            if (UrlUtils.isValidUrl(this.linkInputField.getText())) {
                 this.callback.accept(this.buildValueString());
-                PopupHandler.displayPopup(this.parent);
+                if (this.parent != null) {
+                    PopupHandler.displayPopup(this.parent);
+                } else {
+                    this.setDisplayed(false);
+                }
             } else {
                 FMNotificationPopup p = new FMNotificationPopup(300, new Color(0, 0, 0, 0), 240, () -> {
                     PopupHandler.displayPopup(this);
@@ -233,7 +229,11 @@ public class VideoBackgroundOptionsPopup extends FMPopup {
                 File f = new File(this.selectedVideoPath);
                 if (f.isFile() && f.getPath().toLowerCase().endsWith(".mp4")) {
                     this.callback.accept(this.buildValueString());
-                    PopupHandler.displayPopup(this.parent);
+                    if (this.parent != null) {
+                        PopupHandler.displayPopup(this.parent);
+                    } else {
+                        this.setDisplayed(false);
+                    }
                 } else {
                     FMNotificationPopup p = new FMNotificationPopup(300, new Color(0, 0, 0, 0), 240, () -> {
                         PopupHandler.displayPopup(this);
@@ -258,35 +258,12 @@ public class VideoBackgroundOptionsPopup extends FMPopup {
     protected void onEscapePressed(KeyboardData d) {
         if (d.keycode == 256 && this.isDisplayed()) {
             this.callback.accept(null);
-            PopupHandler.displayPopup(this.parent);
-        }
-    }
-
-    protected static boolean isValidUrl(String url) {
-        if ((url != null) && (url.startsWith("http://") || url.startsWith("https://"))) {
-            try {
-                URL u = new URL(url);
-                HttpURLConnection c = (HttpURLConnection)u.openConnection();
-                c.addRequestProperty("User-Agent", "Mozilla/4.0");
-                c.setRequestMethod("HEAD");
-                int r = c.getResponseCode();
-                if (r == 200) {
-                    return true;
-                }
-            } catch (Exception e1) {
-                try {
-                    URL u = new URL(url);
-                    HttpURLConnection c = (HttpURLConnection)u.openConnection();
-                    c.addRequestProperty("User-Agent", "Mozilla/4.0");
-                    int r = c.getResponseCode();
-                    if (r == 200) {
-                        return true;
-                    }
-                } catch (Exception e2) {}
+            if (this.parent != null) {
+                PopupHandler.displayPopup(this.parent);
+            } else {
+                this.setDisplayed(false);
             }
-            return false;
         }
-        return false;
     }
 
 }

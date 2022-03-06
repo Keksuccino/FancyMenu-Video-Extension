@@ -4,6 +4,8 @@ import de.keksuccino.fancymenu.api.background.MenuBackground;
 import de.keksuccino.fancymenu.api.background.MenuBackgroundType;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.content.BackgroundOptionsPopup;
+import de.keksuccino.fmvideo.popup.SetVideoPopup;
+import de.keksuccino.fmvideo.util.VideoUtils;
 import de.keksuccino.konkrete.gui.screens.popup.PopupHandler;
 import de.keksuccino.konkrete.input.StringUtils;
 import de.keksuccino.konkrete.localization.Locals;
@@ -41,7 +43,7 @@ public class VideoBackgroundType extends MenuBackgroundType {
     @Override
     public MenuBackground createInstanceFromInputString(String s) {
 
-        PropertiesSection ps = VideoBackgroundOptionsPopup.readValueString(s);
+        PropertiesSection ps = VideoUtils.readValueString(s);
         String video = "";
         boolean isLocal = true;
         boolean loop = false;
@@ -77,9 +79,16 @@ public class VideoBackgroundType extends MenuBackgroundType {
     @Override
     public void onInputStringButtonPress(LayoutEditorScreen handler, BackgroundOptionsPopup optionsPopup) {
         String valueString = handler.customMenuBackgroundInputString;
-        VideoBackgroundOptionsPopup p = new VideoBackgroundOptionsPopup(handler, optionsPopup, valueString, (call) -> {
+        SetVideoPopup p = new SetVideoPopup(handler, optionsPopup, valueString, (call) -> {
             if (call != null) {
                 handler.history.saveSnapshot(handler.history.createSnapshot());
+                if (handler.customMenuBackground != null) {
+                    if (handler.customMenuBackground instanceof VideoBackground) {
+                        ((VideoBackground)handler.customMenuBackground).renderer.pause();
+                        ((VideoBackground)handler.customMenuBackground).renderer.setLooping(false);
+                        ((VideoBackground)handler.customMenuBackground).renderer.setTime(0L);
+                    }
+                }
                 optionsPopup.resetBackgrounds();
                 handler.customMenuBackgroundInputString = call;
                 handler.customMenuBackground = this.createInstanceFromInputString(call);
