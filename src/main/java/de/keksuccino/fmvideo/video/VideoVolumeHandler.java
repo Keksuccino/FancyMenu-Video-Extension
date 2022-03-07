@@ -5,6 +5,8 @@ import de.keksuccino.konkrete.math.MathUtils;
 import de.keksuccino.konkrete.properties.PropertiesSection;
 import de.keksuccino.konkrete.properties.PropertiesSerializer;
 import de.keksuccino.konkrete.properties.PropertiesSet;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.SoundCategory;
 
 import java.io.File;
 import java.util.List;
@@ -95,13 +97,27 @@ public class VideoVolumeHandler {
         return volume;
     }
 
+    public static void updateVolume() {
+        setVolume(getVolume());
+    }
+
     public static void updateRendererVolume(VideoRenderer renderer) {
 
-        int baseVol = renderer.baseVolume; //100%
-        double baseVolPercent = ((double) baseVol) / 100.0D;
-        int newRenderVol = (int) (baseVolPercent * volume);
+        int newVol = renderer.getVolume();
 
-        renderer.setVolume(newRenderVol);
+        int baseVol = renderer.baseVolume; //100% for volume handler
+        double baseVolPercent = ((double)baseVol) / 100.0D;
+        int newVolTemp = (int) (baseVolPercent * volume); //100% for MASTER
+
+        if (!FmVideo.config.getOrDefault("ignore_mc_master_volume", false)) {
+            int mcMasterVol = (int) (Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER) * 100);
+            double tempPercent = ((double)newVolTemp) / 100.0D;
+            newVol = (int) (tempPercent * mcMasterVol);
+        } else {
+            newVol = newVolTemp;
+        }
+
+        renderer.setVolume(newVol);
 
     }
 

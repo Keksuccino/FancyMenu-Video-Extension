@@ -6,7 +6,6 @@ import de.keksuccino.fancymenu.api.background.MenuBackgroundTypeRegistry;
 import de.keksuccino.fancymenu.api.buttonaction.ButtonActionRegistry;
 import de.keksuccino.fancymenu.api.item.CustomizationItemRegistry;
 import de.keksuccino.fancymenu.api.placeholder.PlaceholderTextRegistry;
-import de.keksuccino.fmvideo.customization.EventHandler;
 import de.keksuccino.fmvideo.customization.background.VideoBackgroundType;
 import de.keksuccino.fmvideo.customization.buttonaction.LowerVideoVolumeButtonAction;
 import de.keksuccino.fmvideo.customization.buttonaction.UpperVideoVolumeButtonAction;
@@ -43,6 +42,8 @@ public class FmVideo {
     public FmVideo() {
         try {
 
+            //For real, what even is this cursed piece of code?
+            //Who thinks of an easy way to set mods to client/server only and this comes to their mind???
             ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
             //Check if mod was loaded client- or server-side
@@ -69,7 +70,7 @@ public class FmVideo {
                 //Register placeholders
                 PlaceholderTextRegistry.registerPlaceholder(new VideoVolumePlaceholder());
 
-                Konkrete.addPostLoadingEvent("fmvideo", this::onClientSetup);
+                Konkrete.addPostLoadingEvent("fmextension_video", this::onClientSetup);
 
                 MinecraftForge.EVENT_BUS.register(new EventHandler());
 
@@ -81,13 +82,6 @@ public class FmVideo {
             e.printStackTrace();
         }
     }
-
-//    @SubscribeEvent
-//    public void onRegisterCommands(RegisterCommandsEvent e) {
-//
-//        OpenGuiScreenCommand.register(e.getDispatcher());
-//
-//    }
 
     private void onClientSetup() {
         try {
@@ -117,7 +111,7 @@ public class FmVideo {
 
             config = new Config(MOD_DIR.getPath() + "/config.cfg");
 
-            config.registerValue("dummy_value", true, "general");
+            config.registerValue("ignore_mc_master_volume", false, "audio", "If the video volume should ignore Minecraft's master volume.");
 
             config.syncConfig();
 

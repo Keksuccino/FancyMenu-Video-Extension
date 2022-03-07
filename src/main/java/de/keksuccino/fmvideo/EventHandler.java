@@ -1,14 +1,15 @@
-package de.keksuccino.fmvideo.customization;
+package de.keksuccino.fmvideo;
 
 import de.keksuccino.fancymenu.menu.button.ButtonCache;
 import de.keksuccino.fancymenu.menu.fancy.MenuCustomization;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
-import de.keksuccino.fmvideo.FmVideo;
 import de.keksuccino.fmvideo.customization.background.VideoBackground;
 import de.keksuccino.fmvideo.util.VideoUtils;
 import de.keksuccino.fmvideo.video.VideoHandler;
 import de.keksuccino.fmvideo.video.VideoRenderer;
+import de.keksuccino.fmvideo.video.VideoVolumeHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.SoundCategory;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -20,6 +21,8 @@ public class EventHandler {
 
     protected LayoutEditorScreen lastEditorScreen = null;
     protected boolean stoppedInWorld = false;
+
+    protected float lastMcMasterVolume = Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER);
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onScreenInitPre(GuiScreenEvent.InitGuiEvent.Pre e) {
@@ -70,6 +73,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent e) {
+
         //Stop and reset video backgrounds when in a world (when no screen is active)
         if (Minecraft.getInstance().currentScreen == null) {
             if (!this.stoppedInWorld) {
@@ -85,6 +89,17 @@ public class EventHandler {
         } else {
             this.stoppedInWorld = false;
         }
+
+        //Update video volumes after changing MC master volume (if not disabled in config)
+        if (!FmVideo.config.getOrDefault("ignore_mc_master_volume", false)) {
+            if (this.lastMcMasterVolume != Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER)) {
+                //TODO remove debug
+                FmVideo.LOGGER.info("################# MASTER VOLUME CHANGED! UPDATING VIDEO VOLUMES..");
+                VideoVolumeHandler.updateVolume();
+            }
+            this.lastMcMasterVolume = Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER);
+        }
+
     }
 
 }
