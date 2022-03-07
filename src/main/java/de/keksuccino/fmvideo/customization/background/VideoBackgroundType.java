@@ -18,7 +18,7 @@ import java.util.List;
 public class VideoBackgroundType extends MenuBackgroundType {
 
     public VideoBackgroundType() {
-        super("fancymenu_extension:video");
+        super("fancymenu_extension:video_background");
     }
 
     @Override

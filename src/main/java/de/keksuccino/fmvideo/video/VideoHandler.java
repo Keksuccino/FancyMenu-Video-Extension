@@ -49,4 +49,8 @@ public class VideoHandler {
         return l;
     }
 
+    public static boolean isRendererCached(String videoPathOrLink) {
+        return renderers.containsKey(videoPathOrLink);
+    }
+
 }

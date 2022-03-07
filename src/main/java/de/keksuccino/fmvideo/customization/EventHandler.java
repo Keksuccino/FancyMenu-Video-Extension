@@ -14,6 +14,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.util.List;
+
 public class EventHandler {
 
     protected LayoutEditorScreen lastEditorScreen = null;
@@ -36,23 +38,24 @@ public class EventHandler {
                 if (MenuCustomization.isNewMenu() || newEditorInstance) {
                     //TODO remove debug
                     FmVideo.LOGGER.info("############### IS NEW MENU!");
-                    boolean hasVideoBack = false;
+                    boolean hasVideo = false;
+                    List<VideoRenderer> renderersOfNewMenu = VideoUtils.getRenderersOfMenu(e.getGui());
                     for (VideoRenderer r : VideoHandler.getCachedRenderers()) {
                         r.setLooping(false);
-                        if ((e.getGui() instanceof LayoutEditorScreen) || !VideoUtils.menuHasVideoBackground(e.getGui(), r)) {
+                        if ((e.getGui() instanceof LayoutEditorScreen) || !renderersOfNewMenu.contains(r)) {
                             //TODO remove debug
-                            FmVideo.LOGGER.info("######################## STOPPING UNUSED VIDEO BACK: " + r.getMediaPath());
+                            FmVideo.LOGGER.info("######################## STOPPING UNUSED VIDEO: " + r.getMediaPath());
                             if (r.isPlaying()) {
                                 r.pause();
                             }
                         } else if (!(e.getGui() instanceof LayoutEditorScreen)) {
                             //TODO remove debug
-                            FmVideo.LOGGER.info("######################## MENU HAS VIDEO BACK: " + r.getMediaPath());
-                            hasVideoBack = true;
+                            FmVideo.LOGGER.info("######################## MENU HAS VIDEO: " + r.getMediaPath());
+                            hasVideo = true;
                         }
                     }
                     //Reset time of all video backgrounds in menus without video background
-                    if (!hasVideoBack) {
+                    if (!hasVideo) {
                         VideoBackground.lastRenderer = null;
                         for (VideoRenderer r : VideoHandler.getCachedRenderers()) {
                             r.setTime(0L);
@@ -83,19 +86,5 @@ public class EventHandler {
             this.stoppedInWorld = false;
         }
     }
-
-//    AdvancedButton b = new AdvancedButton(20, 20, 100, 20, "TEST", true, (press) -> {
-//        for (VideoRenderer r : VideoHandler.getCachedRenderers()) {
-//            r.setLooping(false);
-//            r.pause();
-//        }
-//    });
-//
-//    @SubscribeEvent
-//    public void onDrawScreenPost(GuiScreenEvent.DrawScreenEvent.Post e) {
-//
-//        b.render(e.getMatrixStack(), e.getMouseX(), e.getMouseY(), e.getRenderPartialTicks());
-//
-//    }
 
 }

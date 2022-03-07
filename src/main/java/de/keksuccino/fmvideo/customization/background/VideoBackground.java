@@ -43,7 +43,7 @@ public class VideoBackground extends MenuBackground {
             this.renderer.play();
         }
         //TODO remove debug
-        FmVideo.LOGGER.info("################################ ON OPEN MENU: " + this.getVideoPathOrLink());
+        FmVideo.LOGGER.info("################################ ON OPEN MENU: " + this.getVideoPathOrLink() + " | " + Minecraft.getInstance().currentScreen.getClass().getName());
     }
 
     @Override
@@ -118,11 +118,11 @@ public class VideoBackground extends MenuBackground {
     }
 
     public int getVolume() {
-        return this.renderer.getVolume();
+        return this.renderer.getBaseVolume();
     }
 
     public void setVolume(int volume) {
-        this.renderer.setVolume(volume);
+        this.renderer.setBaseVolume(volume);
     }
 
     public boolean isLocalVideo() {

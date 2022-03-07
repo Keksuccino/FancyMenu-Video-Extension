@@ -27,14 +27,26 @@ fancymenu.fmvideo.videoproperties.option.disabled = §cDisabled
 
 fancymenu.fmvideo.item = Video
 fancymenu.fmvideo.item.desc = Add a local or online video%n%to your layout.
-fancymenu.fmvideo.item.nomedia.line1 = NO VIDEO SET!
-fancymenu.fmvideo.item.nomedia.line2 = RIGHT-CLICK TO SET VIDEO!
+fancymenu.fmvideo.item.nomedia.line1 = §lNO VIDEO SET!
+fancymenu.fmvideo.item.nomedia.line2 = §lRIGHT-CLICK TO SET VIDEO!
 fancymenu.fmvideo.item.options.resetvideo = Reset Video
 fancymenu.fmvideo.item.options.resetvideo.btn.desc = Reset the video and all settings%n%to its defaults.
 fancymenu.fmvideo.item.options.setvideo = Set Video Path/Link
 fancymenu.fmvideo.item.options.setvideo.btn.desc = Set the path or link to%n%the video you want to play.
+fancymenu.fmvideo.item.options.aspectratio = Resize To Aspect Ratio
+fancymenu.fmvideo.item.options.aspectratio.btn.desc = Resize the video element%n%to its correct aspect ratio.%n%%n%This allows you to further%n%resize it, while pressing%n%SHIFT, to keep its aspect ratio.
 fancymenu.fmvideo.item.options.volume = Volume
 fancymenu.fmvideo.item.options.volume.btn.desc = Set the audio volume of the video.
 fancymenu.fmvideo.item.options.loop.on = Looping: §aOn
 fancymenu.fmvideo.item.options.loop.off = Looping: §cOff
 fancymenu.fmvideo.item.options.loop.btn.desc = If the video should play in a loop.
+
+fancymenu.fmvideo.buttonaction.lowervolume.action.desc = Lower the volume of videos.
+fancymenu.fmvideo.buttonaction.lowervolume.value.desc = Percent per Click
+
+fancymenu.fmvideo.buttonaction.uppervolume.action.desc = Upper the volume of videos.
+fancymenu.fmvideo.buttonaction.uppervolume.value.desc = Percent per Click
+
+fancymenu.fmvideo.placeholder.category = Video
+fancymenu.fmvideo.placeholder.videovolume = Video Volume
+fancymenu.fmvideo.placeholder.videovolume.desc = Gets the current%n%video volume percentage.

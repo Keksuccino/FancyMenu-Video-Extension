@@ -83,6 +83,23 @@ public class VideoLayoutEditorElement extends LayoutEditorElement {
 
         this.rightclickMenu.addSeparator();
 
+        AdvancedButton setToAspectRationButton = new AdvancedButton(0, 0, 0, 0, Locals.localize("fancymenu.fmvideo.item.options.aspectratio"), (press) -> {
+            if (i.renderer != null) {
+                if (i.renderer.canPlay()) {
+                    this.handler.history.saveSnapshot(this.handler.history.createSnapshot());
+                    int w = (int) i.renderer.getVideoDimension().getWidth();
+                    int h = (int) i.renderer.getVideoDimension().getHeight();
+                    double ratio = (double) w / (double) h;
+                    i.height = 100;
+                    i.width = (int)(i.height * ratio);
+                }
+            }
+        });
+        setToAspectRationButton.setDescription(StringUtils.splitLines(Locals.localize("fancymenu.fmvideo.item.options.aspectratio.btn.desc"), "%n%"));
+        this.rightclickMenu.addContent(setToAspectRationButton);
+
+        this.rightclickMenu.addSeparator();
+
         AdvancedButton loopButton = new AdvancedButton(0, 0, 0, 0, Locals.localize("fancymenu.fmvideo.item.options.loop.off"), (press) -> {
             if (i.looping) {
                 i.looping = false;

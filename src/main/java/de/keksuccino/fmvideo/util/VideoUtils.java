@@ -2,37 +2,80 @@ package de.keksuccino.fmvideo.util;
 
 import de.keksuccino.fancymenu.menu.fancy.MenuCustomizationProperties;
 import de.keksuccino.fmvideo.popup.VideoPropertiesPopup;
+import de.keksuccino.fmvideo.video.VideoHandler;
 import de.keksuccino.fmvideo.video.VideoRenderer;
 import de.keksuccino.konkrete.properties.PropertiesSection;
 import de.keksuccino.konkrete.properties.PropertiesSet;
 import net.minecraft.client.gui.screen.Screen;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VideoUtils {
 
-    public static boolean menuHasVideoBackground(Screen screen, VideoRenderer renderer) {
-        List<PropertiesSet> layouts = MenuCustomizationProperties.getPropertiesWithIdentifier(screen.getClass().getName());
-        if ((layouts != null) && !layouts.isEmpty()) {
-            for (PropertiesSet s : layouts) {
-                for (PropertiesSection sec : s.getPropertiesOfType("customization")) {
-                    String action = sec.getEntryValue("action");
-                    if ((action != null) && (action.equalsIgnoreCase("api:custombackground"))) {
-                        String value = sec.getEntryValue("input_string");
-                        if (value != null) {
-                            PropertiesSection videoProps = readValueString(value);
-                            String videoPathLink = videoProps.getEntryValue("video");
-                            if (videoPathLink != null) {
-                                if (renderer.getMediaPath().equals(videoPathLink)) {
-                                    return true;
+//    public static boolean menuHasVideoBackground(Screen screen, VideoRenderer renderer) {
+//        List<PropertiesSet> layouts = MenuCustomizationProperties.getPropertiesWithIdentifier(screen.getClass().getName());
+//        if ((layouts != null) && !layouts.isEmpty()) {
+//            for (PropertiesSet s : layouts) {
+//                for (PropertiesSection sec : s.getPropertiesOfType("customization")) {
+//                    String action = sec.getEntryValue("action");
+//                    if ((action != null) && (action.equalsIgnoreCase("api:custombackground"))) {
+//                        String typeId = sec.getEntryValue("type_identifier");
+//                        if ((typeId != null) && typeId.equalsIgnoreCase("fancymenu_extension:video_background")) {
+//                            String value = sec.getEntryValue("input_string");
+//                            if (value != null) {
+//                                PropertiesSection videoProps = readValueString(value);
+//                                String videoPathLink = videoProps.getEntryValue("video");
+//                                if (videoPathLink != null) {
+//                                    if (renderer.getMediaPath().equals(videoPathLink)) {
+//                                        return true;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+    public static List<VideoRenderer> getRenderersOfMenu(Screen screen) {
+        List<VideoRenderer> l = new ArrayList<>();
+        try {
+            List<PropertiesSet> layouts = MenuCustomizationProperties.getPropertiesWithIdentifier(screen.getClass().getName());
+            if ((layouts != null) && !layouts.isEmpty()) {
+                for (PropertiesSet s : layouts) {
+                    for (PropertiesSection sec : s.getPropertiesOfType("customization")) {
+                        String action = sec.getEntryValue("action");
+                        if (action != null) {
+                            if (action.equalsIgnoreCase("api:custombackground")) {
+                                String typeId = sec.getEntryValue("type_identifier");
+                                if ((typeId != null) && typeId.equalsIgnoreCase("fancymenu_extension:video_background")) {
+                                    String value = sec.getEntryValue("input_string");
+                                    if (value != null) {
+                                        PropertiesSection videoProps = readValueString(value);
+                                        String videoPathLink = videoProps.getEntryValue("video");
+                                        if (videoPathLink != null) {
+                                            l.add(VideoHandler.getRenderer(videoPathLink));
+                                        }
+                                    }
+                                }
+                            }
+                            if (action.equalsIgnoreCase("custom_layout_element:fancymenu_extension:video_item")) {
+                                String videoPathLink = sec.getEntryValue("video");
+                                if (videoPathLink != null) {
+                                    l.add(VideoHandler.getRenderer(videoPathLink));
                                 }
                             }
                         }
                     }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return false;
+        return l;
     }
 
     public static String buildValueString(String video, boolean isLocal, VideoPropertiesPopup.VideoProperties props) {

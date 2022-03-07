@@ -3,10 +3,16 @@ package de.keksuccino.fmvideo;
 import java.io.File;
 
 import de.keksuccino.fancymenu.api.background.MenuBackgroundTypeRegistry;
+import de.keksuccino.fancymenu.api.buttonaction.ButtonActionRegistry;
 import de.keksuccino.fancymenu.api.item.CustomizationItemRegistry;
+import de.keksuccino.fancymenu.api.placeholder.PlaceholderTextRegistry;
 import de.keksuccino.fmvideo.customization.EventHandler;
 import de.keksuccino.fmvideo.customization.background.VideoBackgroundType;
+import de.keksuccino.fmvideo.customization.buttonaction.LowerVideoVolumeButtonAction;
+import de.keksuccino.fmvideo.customization.buttonaction.UpperVideoVolumeButtonAction;
 import de.keksuccino.fmvideo.customization.item.VideoCustomizationItemContainer;
+import de.keksuccino.fmvideo.customization.placeholder.VideoVolumePlaceholder;
+import de.keksuccino.fmvideo.video.VideoVolumeHandler;
 import de.keksuccino.konkrete.localization.Locals;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,11 +54,20 @@ public class FmVideo {
 
                 updateConfig();
 
-                //Registering video background type
+                VideoVolumeHandler.init();
+
+                //Register video background type
                 MenuBackgroundTypeRegistry.registerBackgroundType(new VideoBackgroundType());
 
-                //Registering video item container
+                //Register video item container
                 CustomizationItemRegistry.registerItem(new VideoCustomizationItemContainer());
+
+                //Register button actions
+                ButtonActionRegistry.registerButtonAction(new LowerVideoVolumeButtonAction());
+                ButtonActionRegistry.registerButtonAction(new UpperVideoVolumeButtonAction());
+
+                //Register placeholders
+                PlaceholderTextRegistry.registerPlaceholder(new VideoVolumePlaceholder());
 
                 Konkrete.addPostLoadingEvent("fmvideo", this::onClientSetup);
 

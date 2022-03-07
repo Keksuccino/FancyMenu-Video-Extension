@@ -31,7 +31,7 @@ public class VideoCustomizationItem extends CustomizationItem {
 
         super(parentContainer, item);
 
-        //If video is local or online (+ getting the video renderer based on the media link/path)
+        //If video is local or online
         String local = item.getEntryValue("islocal");
         if ((local != null) && local.equalsIgnoreCase("false")) {
             this.isLocal = false;
@@ -88,7 +88,7 @@ public class VideoCustomizationItem extends CustomizationItem {
             if (this.renderer != null) {
 
                 this.renderer.setLooping(this.looping);
-                this.renderer.setVolume(this.volume);
+                this.renderer.setBaseVolume(this.volume);
                 this.renderer.play();
 
                 this.renderer.render(matrix, x, y, this.getWidth(), this.getHeight());

@@ -21,6 +21,8 @@ public class VideoRenderer {
 
     protected ResourceLocation lastFrame = null;
 
+    protected int baseVolume = 100;
+
     public VideoRenderer(String mediaPathOrLink) {
 
         this.mediaPath = mediaPathOrLink;
@@ -86,11 +88,26 @@ public class VideoRenderer {
      * @param volume Value between 0 and 200.
      */
     public void setVolume(int volume) {
+        if (volume < 0) {
+            volume = 0;
+        }
+        if (volume > 200) {
+            volume = 200;
+        }
         this.player.volume(volume);
     }
 
     public int getVolume() {
         return this.player.getTrueMediaPlayer().mediaPlayer().audio().volume();
+    }
+
+    public void setBaseVolume(int vol) {
+        this.baseVolume = vol;
+        VideoVolumeHandler.updateRendererVolume(this);
+    }
+
+    public int getBaseVolume() {
+        return this.baseVolume;
     }
 
     public void setTime(long time) {
