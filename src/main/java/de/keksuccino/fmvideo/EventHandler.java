@@ -1,14 +1,22 @@
 package de.keksuccino.fmvideo;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import de.keksuccino.fancymenu.events.SoftMenuReloadEvent;
 import de.keksuccino.fancymenu.menu.button.ButtonCache;
 import de.keksuccino.fancymenu.menu.fancy.MenuCustomization;
+import de.keksuccino.fancymenu.menu.fancy.helper.MenuReloadedEvent;
 import de.keksuccino.fancymenu.menu.fancy.helper.layoutcreator.LayoutEditorScreen;
+import de.keksuccino.fancymenu.menu.fancy.helper.ui.FMConfigScreen;
+import de.keksuccino.fancymenu.menu.fancy.helper.ui.UIBase;
 import de.keksuccino.fmvideo.customization.background.VideoBackground;
 import de.keksuccino.fmvideo.util.VideoUtils;
 import de.keksuccino.fmvideo.video.VideoHandler;
 import de.keksuccino.fmvideo.video.VideoRenderer;
 import de.keksuccino.fmvideo.video.VideoVolumeHandler;
+import de.keksuccino.konkrete.gui.content.AdvancedImageButton;
+import de.keksuccino.konkrete.localization.Locals;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.TickEvent;
@@ -19,10 +27,34 @@ import java.util.List;
 
 public class EventHandler {
 
+    protected static final ResourceLocation SETTINGS_ICON_LOCATION = new ResourceLocation("fmvideo", "fm_video_extension_settings_button.png");
+
     protected LayoutEditorScreen lastEditorScreen = null;
     protected boolean stoppedInWorld = false;
 
     protected float lastMcMasterVolume = Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER);
+
+    protected AdvancedImageButton openSettingsButton;
+
+    public EventHandler() {
+
+        this.openSettingsButton = new AdvancedImageButton(-10, 80, 44, 35, SETTINGS_ICON_LOCATION, true, (press) -> {
+            Minecraft.getInstance().displayGuiScreen(new FmVideoConfigScreen(Minecraft.getInstance().currentScreen));
+        }) {
+            @Override
+            public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+                this.setDescription(Locals.localize("fancymenu.fmvideo.config"));
+                if (this.isHovered()) {
+                    this.setX(-2);
+                } else {
+                    this.setX(-10);
+                }
+                super.render(matrixStack, mouseX, mouseY, partialTicks);
+            }
+        };
+        UIBase.colorizeButton(this.openSettingsButton);
+
+    }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onScreenInitPre(GuiScreenEvent.InitGuiEvent.Pre e) {
@@ -100,6 +132,37 @@ public class EventHandler {
             this.lastMcMasterVolume = Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER);
         }
 
+    }
+
+    @SubscribeEvent
+    public void onDrawScreenPost(GuiScreenEvent.DrawScreenEvent.Post e) {
+
+        if (e.getGui() instanceof FMConfigScreen) {
+
+            this.openSettingsButton.render(e.getMatrixStack(), e.getMouseX(), e.getMouseY(), e.getRenderPartialTicks());
+
+        }
+
+    }
+
+    @SubscribeEvent
+    public void onReload(MenuReloadedEvent e) {
+        VideoBackground.lastRenderer = null;
+        for (VideoRenderer r : VideoHandler.getCachedRenderers()) {
+            r.setLooping(false);
+            r.setTime(0L);
+            r.pause();
+        }
+    }
+
+    @SubscribeEvent
+    public void onSoftReload(SoftMenuReloadEvent e) {
+        VideoBackground.lastRenderer = null;
+        for (VideoRenderer r : VideoHandler.getCachedRenderers()) {
+            r.setLooping(false);
+            r.setTime(0L);
+            r.pause();
+        }
     }
 
 }

@@ -18,10 +18,9 @@ public class VideoRenderer {
     protected int playerId = MediaPlayer.getNew();
 
     protected boolean playing = false;
+    protected int baseVolume = 100;
 
     protected ResourceLocation lastFrame = null;
-
-    protected int baseVolume = 100;
 
     public VideoRenderer(String mediaPathOrLink) {
 
@@ -51,7 +50,6 @@ public class VideoRenderer {
 
     }
 
-    //TODO change to setPlaying()
     public void play() {
         if (!isPlaying()) {
             this.playing = true;
@@ -59,7 +57,6 @@ public class VideoRenderer {
         }
     }
 
-    //TODO change to setPlaying()
     public void pause() {
         if (isPlaying()) {
             this.playing = false;
@@ -85,6 +82,9 @@ public class VideoRenderer {
     }
 
     /**
+     * <b>FOR INTERNAL USE ONLY!</b><br>
+     * Use {@link VideoRenderer#setBaseVolume(int)} instead, if you want to set the video volume.<br><br>
+     *
      * @param volume Value between 0 and 200.
      */
     public void setVolume(int volume) {

@@ -50,3 +50,10 @@ fancymenu.fmvideo.buttonaction.uppervolume.value.desc = Percent per Click
 fancymenu.fmvideo.placeholder.category = Video
 fancymenu.fmvideo.placeholder.videovolume = Video Volume
 fancymenu.fmvideo.placeholder.videovolume.desc = Gets the current%n%video volume percentage.
+
+fancymenu.fmvideo.config = Video Extension Settings
+
+fancymenu.fmvideo.config.categories.audio = Audio
+
+fancymenu.fmvideo.config.ignore_mc_master_volume = Ignore MC Master Volume
+fancymenu.fmvideo.config.ignore_mc_master_volume.desc = If the video volume should%n%ignore Minecraft's master volume.
