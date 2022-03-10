@@ -31,11 +31,6 @@ import org.apache.logging.log4j.Logger;
 @Mod("fmextension_video")
 public class FmVideo {
 
-    //TODO button für video config in FM settings screen adden
-    //TODO button für video config in FM settings screen adden
-    //TODO button für video config in FM settings screen adden
-    //TODO button für video config in FM settings screen adden
-
     public static final String VERSION = "1.0.0";
 
     public static final Logger LOGGER = LogManager.getLogger();

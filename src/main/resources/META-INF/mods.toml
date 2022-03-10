@@ -14,8 +14,8 @@ COPYRIGHT:
 > FancyMenu Video Extension © Copyright 2022 Keksuccino.
   FancyMenu Video Extension is licensed under GPLv3.
 
-> FancyVideo © Copyright Nick1st.
-  FancyVideo is licensed under GPLv3.
+> FancyVideo-API © Copyright Nick1st.
+  FancyVideo-API is licensed under GPLv3.
 
 ----------
 
@@ -28,6 +28,12 @@ modId="fancymenu"
 mandatory=true
 ordering="AFTER"
 versionRange="[2.6.4,)"
+side="BOTH"
+
+[[dependencies.fmextension_video]]
+modId="fancyvideo-api"
+mandatory=true
+ordering="AFTER"
 side="BOTH"
 
 [[dependencies.fmextension_video]]

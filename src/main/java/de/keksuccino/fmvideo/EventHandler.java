@@ -71,21 +71,15 @@ public class EventHandler {
                 }
 
                 if (MenuCustomization.isNewMenu() || newEditorInstance) {
-                    //TODO remove debug
-                    FmVideo.LOGGER.info("############### IS NEW MENU!");
                     boolean hasVideo = false;
                     List<VideoRenderer> renderersOfNewMenu = VideoUtils.getRenderersOfMenu(e.getGui());
                     for (VideoRenderer r : VideoHandler.getCachedRenderers()) {
                         r.setLooping(false);
                         if ((e.getGui() instanceof LayoutEditorScreen) || !renderersOfNewMenu.contains(r)) {
-                            //TODO remove debug
-                            FmVideo.LOGGER.info("######################## STOPPING UNUSED VIDEO: " + r.getMediaPath());
                             if (r.isPlaying()) {
                                 r.pause();
                             }
                         } else if (!(e.getGui() instanceof LayoutEditorScreen)) {
-                            //TODO remove debug
-                            FmVideo.LOGGER.info("######################## MENU HAS VIDEO: " + r.getMediaPath());
                             hasVideo = true;
                         }
                     }
@@ -125,8 +119,6 @@ public class EventHandler {
         //Update video volumes after changing MC master volume (if not disabled in config)
         if (!FmVideo.config.getOrDefault("ignore_mc_master_volume", false)) {
             if (this.lastMcMasterVolume != Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER)) {
-                //TODO remove debug
-                FmVideo.LOGGER.info("################# MASTER VOLUME CHANGED! UPDATING VIDEO VOLUMES..");
                 VideoVolumeHandler.updateVolume();
             }
             this.lastMcMasterVolume = Minecraft.getInstance().gameSettings.getSoundLevel(SoundCategory.MASTER);

@@ -42,8 +42,6 @@ public class VideoBackground extends MenuBackground {
         if (!renderer.isPlaying()) {
             this.renderer.play();
         }
-        //TODO remove debug
-        FmVideo.LOGGER.info("################################ ON OPEN MENU: " + this.getVideoPathOrLink() + " | " + Minecraft.getInstance().currentScreen.getClass().getName());
     }
 
     @Override
